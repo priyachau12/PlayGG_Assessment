@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  role     Role     @default(USER)
+  tasks    Task[]
+  comments Comment[]
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String
+  status      Status     @default(TODO)
+  users       User[]
+  comments    Comment[]
+}
+
+enum Status {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  content String
+  task    Task   @relation(fields: [taskId], references: [id])
+  taskId  String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+}

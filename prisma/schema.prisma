@@ -8,6 +8,7 @@ generator client {
   output   = "../node_modules/.prisma/client"
 }
 
+
 model User {
   id       String            @id @default(uuid())
   email    String            @unique
@@ -21,7 +22,7 @@ model Task {
   id          String            @id @default(uuid())
   title       String
   description String
-  status      Status            @default(TODO)
+  status      TaskStatus            @default(TODO)
   assignees   TaskAssignment[]  // relation via join table
   comments    Comment[]
 }
@@ -52,7 +53,7 @@ enum Role {
   USER
 }
 
-enum Status {
+enum TaskStatus {
   TODO
   IN_PROGRESS
   COMPLETED

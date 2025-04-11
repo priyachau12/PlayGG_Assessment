@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsEnum, IsArray } from 'class-validator';
 import { TaskStatus } from '@prisma/client';
 
+
 export class CreateTaskDto {
   @IsString()
   title: string;
@@ -15,5 +16,6 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsArray()
-  assigneeIds?: string[]; // list of user IDs
+  assigneeIds?: string[]; 
 }
+

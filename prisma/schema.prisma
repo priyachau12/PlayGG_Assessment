@@ -3,21 +3,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 generator client {
   provider = "prisma-client-js"
   output   = "../node_modules/.prisma/client"
 }
 
-
 model User {
-  id       String   @id @default(uuid())
-  email    String   @unique
+  id       String            @id @default(uuid())
+  email    String            @unique
   password String
-  role     Role     @default(USER)
-  tasks    Task[]
+  role     Role              @default(USER)
+  tasks    TaskAssignment[]  // relation via join table
   comments Comment[]
+}
+
+model Task {
+  id          String            @id @default(uuid())
+  title       String
+  description String
+  status      Status            @default(TODO)
+  assignees   TaskAssignment[]  // relation via join table
+  comments    Comment[]
+}
+
+model TaskAssignment {
+  id     String @id @default(uuid())
+  task   Task   @relation(fields: [taskId], references: [id])
+  taskId String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([taskId, userId]) // Prevent duplicate user-task assignments
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  taskId    String
+  userId    String
+  task      Task     @relation(fields: [taskId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum Role {
@@ -26,26 +52,8 @@ enum Role {
   USER
 }
 
-model Task {
-  id          String     @id @default(uuid())
-  title       String
-  description String
-  status      Status     @default(TODO)
-  users       User[]
-  comments    Comment[]
-}
-
 enum Status {
   TODO
   IN_PROGRESS
   COMPLETED
-}
-
-model Comment {
-  id      String @id @default(uuid())
-  content String
-  task    Task   @relation(fields: [taskId], references: [id])
-  taskId  String
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
 }
